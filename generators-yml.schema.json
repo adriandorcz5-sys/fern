@@ -2751,6 +2751,16 @@
             }
           ]
         },
+        "examples": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "name": {
           "oneOf": [
             {
@@ -3968,7 +3978,8 @@
       "type": "string",
       "enum": [
         "pull-request",
-        "push"
+        "push",
+        "commit-and-release"
       ]
     },
     "license.GithubLicenseType": {

@@ -2,7 +2,12 @@ import { FernToken } from "@fern-api/auth";
 import { fernConfigJson, GENERATORS_CONFIGURATION_FILENAME, generatorsYml } from "@fern-api/configuration-loader";
 import { ContainerRunner } from "@fern-api/core-utils";
 import { AbsoluteFilePath, cwd, join, RelativeFilePath, resolve } from "@fern-api/fs-utils";
-import { runLocalGenerationForWorkspace } from "@fern-api/local-workspace-runner";
+import { OSSWorkspace } from "@fern-api/lazy-fern-workspace";
+import {
+    createSpecsTarGzBuffer,
+    generatorWantsSpecs,
+    runLocalGenerationForWorkspace
+} from "@fern-api/local-workspace-runner";
 import {
     AutomationRunOptions,
     findGeneratorLineNumber,
@@ -173,6 +178,24 @@ export async function generateWorkspace({
                         disableTelemetry: isTelemetryDisabled()
                     });
                 } else if (token != null) {
+                    // Lazily build the specs tar.gz once per group, only if a generator needs it
+                    let cachedSpecsTarGz: Buffer | undefined;
+                    let specsComputed = false;
+                    const getSpecsTarGz = async (generatorName: string): Promise<Buffer | undefined> => {
+                        if (!(workspace instanceof OSSWorkspace) || !generatorWantsSpecs(generatorName)) {
+                            return undefined;
+                        }
+                        if (!specsComputed) {
+                            specsComputed = true;
+                            cachedSpecsTarGz = await createSpecsTarGzBuffer({
+                                specs: workspace.allSpecs,
+                                context: groupContext,
+                                audiences: group.audiences
+                            });
+                        }
+                        return cachedSpecsTarGz;
+                    };
+
                     await runRemoteGenerationForAPIWorkspace({
                         projectConfig,
                         organization,
@@ -198,7 +221,9 @@ export async function generateWorkspace({
                         occurrenceTracker,
                         skipIfNoDiff,
                         noReplay,
-                        disableTelemetry: isTelemetryDisabled()
+                        verify,
+                        disableTelemetry: isTelemetryDisabled(),
+                        getSpecsTarGzBuffer: getSpecsTarGz
                     });
                 }
             })

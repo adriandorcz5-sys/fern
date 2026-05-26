@@ -343,7 +343,7 @@ When creating pull requests in this repository:
 
    **Allowed types**: `fix`, `feat`, `revert`, `break`, `chore`
 
-   **Allowed scopes**: `docs`, `changelog`, `internal`, `cli`, `typescript`, `python`, `java`, `csharp`, `go`, `php`, `ruby`, `seed`, `ci`, `lint`, `fastapi`, `spring`, `openapi`, `deps`, `deps-dev`, `pydantic`, `ai-search`, `swift`, `rust`
+   **Allowed scopes**: `docs`, `changelog`, `internal`, `cli`, `typescript`, `python`, `java`, `csharp`, `go`, `php`, `ruby`, `seed`, `ci`, `lint`, `openapi`, `deps`, `deps-dev`, `pydantic`, `ai-search`, `swift`, `rust`, `generator-cli`, `parser`, `ir`, `cli-v2`, `cli-generator`
 
    **Examples**: `chore(docs): update guidelines`, `feat(python): add new feature`, `fix(cli): resolve config loading bug`
 
@@ -392,6 +392,8 @@ Trade-offs, limitations, and follow-on implications.
 After writing the ADR, number it by finding the highest existing `docs/adr/NNNN-*.md` and incrementing by one.
 
 ## Troubleshooting
+
+For Sentry `buildwithfern` / `cli` false-positive triage, see the Devin skill at [`.devin/automation/sentry-triage/SKILL.md`](.devin/automation/sentry-triage/SKILL.md), plus [`.devin/automation/sentry-triage/DESIGN_CHOICES.md`](.devin/automation/sentry-triage/DESIGN_CHOICES.md) and the per-issue ledger files under [`.devin/automation/sentry-triage/ledger/`](.devin/automation/sentry-triage/ledger/).
 
 ### Quick Fixes by Issue Type
 - **Generator failures**: Check `docker ps` → Rebuild image → Check container logs
